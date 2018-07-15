@@ -1,3 +1,4 @@
+FROM node:10-alpine as node
 FROM ruby:2.5-alpine3.7
 
 ARG VERSION=v2.4.3
@@ -14,6 +15,14 @@ ENV UID=991 GID=991 \
 
 WORKDIR /mastodon
 
+# Copy node from node:10-alpine
+COPY --from=node /usr/local/bin/node /usr/local/bin/node
+COPY --from=node /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/npm
+COPY --from=node /opt/yarn-* /opt/yarn
+RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
+ && ln -s /opt/yarn/bin/yarn /usr/local/bin/yarn \
+ && ln -s /opt/yarn/bin/yarnpkg /usr/local/bin/yarnpkg
+
 # Install dependencies
 RUN apk -U upgrade \
  && apk add \
@@ -26,8 +35,6 @@ RUN apk -U upgrade \
     libidn \
     libpq \
     libressl \
-    nodejs-npm \
-    nodejs \
     protobuf \
     s6 \
     su-exec \
@@ -43,7 +50,6 @@ RUN apk -U upgrade \
     protobuf-dev \
     python \
     tar \
-    yarn \
 
 # Update CA certificates
  && update-ca-certificates \
