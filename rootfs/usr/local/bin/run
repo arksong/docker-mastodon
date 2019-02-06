@@ -39,6 +39,9 @@ echo "Updating permissions, this can take a while..."
 #find /mastodon -path /mastodon/public/system -prune -o -not -user mastodon -not -group mastodon -print0 | xargs -0 chown -f mastodon:mastodon
 chown -R mastodon:mastodon /etc/s6.d
 
+mkdir -p /mastodon/tmp
+chown -R mastodon:mastodon /mastodon/tmp
+
 if [ "$RUN_DB_MIGRATIONS" == "true" ]; then
   echo "Running database migrations task..."
   su-exec mastodon:mastodon bundle exec rake db:migrate

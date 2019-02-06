@@ -1,7 +1,7 @@
 FROM node:10-alpine as node
-FROM ruby:2.5-alpine3.7
+FROM ruby:2.6-alpine3.9
 
-ARG VERSION=v2.4.3
+ARG VERSION=v2.7.1
 ARG REPOSITORY=tootsuite/mastodon
 ARG LIBICONV_VERSION=1.15
 
@@ -34,6 +34,8 @@ RUN apk -U upgrade \
     imagemagick \
     libidn \
     libpq \
+    libxml2 \
+    libxslt \
     libressl \
     protobuf \
     s6 \
@@ -45,7 +47,10 @@ RUN apk -U upgrade \
     build-base \
     icu-dev \
     libidn-dev \
+    openssl \
     libtool \
+    libxml2-dev \
+    libxslt-dev \
     postgresql-dev \
     protobuf-dev \
     python \
@@ -64,7 +69,7 @@ RUN apk -U upgrade \
 # Install Mastodon
  && cd /mastodon \
  && wget -qO- https://github.com/${REPOSITORY}/archive/${VERSION}.tar.gz | tar xz --strip 1 \
- && bundle config build.nokogiri --with-iconv-lib=/usr/local/lib --with-iconv-include=/usr/local/include \
+ && bundle config build.nokogiri --use-system-libraries --with-iconv-lib=/usr/local/lib --with-iconv-include=/usr/local/include \
  && bundle install -j$(getconf _NPROCESSORS_ONLN) --deployment --clean --no-cache --without test development \
  && yarn --ignore-optional --pure-lockfile \
 
